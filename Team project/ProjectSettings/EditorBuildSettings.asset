@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/LuoSong/Scenes/LestonsScene.unity
+    guid: a230e387273332d48a4578c72f10f163
   m_configObjects: {}
