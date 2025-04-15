@@ -1,23 +1,38 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("移动参数")]
-    public float moveSpeed = 5f;    // 前进/后退速度
-    public float rotateSpeed = 100f; // 旋转速度
+    [SerializeField] private float moveSpeed = 5f;     // 前进/后退速度
+    [SerializeField] private float rotateSpeed = 120f; // 旋转速度（度/秒）
+
+    private Rigidbody rb;
+    private float moveInput;   // W/S 输入值 (-1到1)
+    private float rotateInput; // A/D 输入值 (-1到1)
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true; // 防止物理旋转干扰
+    }
 
     void Update()
     {
-        // 获取键盘输入
-        float moveInput = Input.GetAxis("Vertical");    // W/S 或 上/下箭头 (范围: -1 到 1)
-        float rotateInput = Input.GetAxis("Horizontal"); // A/D 或 左/右箭头 (范围: -1 到 1)
+        // 获取输入
+        moveInput = Input.GetAxis("Vertical");    // W/S 键
+        rotateInput = Input.GetAxis("Horizontal"); // A/D 键
+    }
 
-        // 前后移动（W/S）
-        Vector3 movement = transform.forward * moveInput * moveSpeed * Time.deltaTime;
-        transform.Translate(movement, Space.World);
+    void FixedUpdate()
+    {
+        // 前进/后退移动
+        Vector3 movement = transform.forward * moveInput * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + movement);
 
-        // 左右旋转（A/D）
-        float rotation = rotateInput * rotateSpeed * Time.deltaTime;
-        transform.Rotate(0f, rotation, 0f);
+        // 左右旋转
+        float rotation = rotateInput * rotateSpeed * Time.fixedDeltaTime;
+        Quaternion deltaRotation = Quaternion.Euler(0f, rotation, 0f);
+        rb.MoveRotation(rb.rotation * deltaRotation);
     }
 }
