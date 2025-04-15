@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.collab-proxy": "1.13.5",
     "com.unity.feature.development": "1.0.1",
+    "com.unity.inputsystem": "1.4.4",
     "com.unity.polybrush": "1.1.8",
     "com.unity.probuilder": "5.0.7",
     "com.unity.textmeshpro": "3.0.6",
