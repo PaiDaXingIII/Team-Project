@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Team project/Assets/Niu Haoran/Scripts/NPlayerController.cs.meta
 guid: 8f15874c955fd144dbf666409d3454cb
+========
+guid: be2f4aa750c530144bd7219a00354c98
+>>>>>>>> aea6be04de6e074171432d4e71a0f0c63cb24524:Team project/Assets/RenHaoyu/Prefabs/ithappy/Animals_FREE/Scripts/CreatureMover.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
