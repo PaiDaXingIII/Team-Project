@@ -1886,7 +1886,7 @@ MonoBehaviour:
   speed: 6
   countText: {fileID: 220628149}
   winTextObject: {fileID: 2114048776}
-  pickupSound: {fileID: 8300000, guid: 0b163e9a8367d204786ed38bbf4259c0, type: 3}
+  pickupSound: {fileID: 8300000, guid: 2966c2de85c547044bb3cdf0a9178b36, type: 3}
   rotationSmoothing: 10
   gravity: 9.81
   verticalParam: Vert
@@ -2666,7 +2666,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dac01cedad6729440af4312f50b263b5, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.4
+  m_Volume: 0.296
   m_Pitch: 1
   Loop: 1
   Mute: 0
