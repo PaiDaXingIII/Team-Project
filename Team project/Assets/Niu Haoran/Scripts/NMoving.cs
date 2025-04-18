@@ -4,10 +4,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
-public class NMove : MonoBehaviour
+// 定义一个名为 Move 的公共类，继承自 MonoBehaviour，用于控制角色的移动和交互
+public class NMoving : MonoBehaviour
 {
-    // Rigidbody of the player.
-    private Rigidbody rb;
+    // Character Controller of the player.
+    private CharacterController controller;
+    // 角色的 Animator 组件，用于控制角色的动画播放
+    private Animator animator;
 
     // Variable to keep track of collected "PickUp" objects.
     private int count;
@@ -17,7 +20,7 @@ public class NMove : MonoBehaviour
     private float movementY;
 
     // Speed at which the player moves.
-    public float speed = 2;
+    public float speed = 5f;
 
     // UI text component to display count of "PickUp" objects collected.
     public TextMeshProUGUI countText;
@@ -33,31 +36,30 @@ public class NMove : MonoBehaviour
     // 旋转平滑度
     public float rotationSmoothing = 10f;
 
+    // 重力
+    public float gravity = 9.81f;
+    private Vector3 velocity;
+
+    // 动画设置相关
+    [Header("Animation Settings")]
+    // 动画控制器中用于控制垂直移动动画的参数名称
+    public string verticalParam = "Vert";
+    // 动画控制器中用于控制角色状态（如移动、站立）的参数名称
+    public string stateParam = "State";
+
     // Start is called before the first frame update.
     void Start()
     {
-        // Get and store the Rigidbody component attached to the player.
-        rb = GetComponent<Rigidbody>();
+        // Get and store the Character Controller component attached to the player.
+        controller = GetComponent<CharacterController>();
+        // 获取角色的 Animator 组件
+        animator = GetComponent<Animator>();
 
         // 初始化音频组件
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
-        // Adjust Rigidbody settings for better slope movement
-        rb.freezeRotation = true; // Freeze rotation to prevent unwanted tipping
-        rb.useGravity = true; // Ensure gravity is enabled
-
-        // You can also adjust the friction of the attached collider's material
-        Collider col = GetComponent<Collider>();
-        if (col != null)
-        {
-            PhysicMaterial material = new PhysicMaterial();
-            material.dynamicFriction = 0.1f;
-            material.staticFriction = 0.1f;
-            col.material = material;
         }
 
         // Initialize count to zero.
@@ -79,16 +81,15 @@ public class NMove : MonoBehaviour
         // Store the X and Y components of the movement.
         movementX = movementVector.x;
         movementY = movementVector.y;
+
+        Debug.Log($"Movement Input: X={movementX}, Y={movementY}");
     }
 
-    // FixedUpdate is called once per fixed frame-rate frame.
-    private void FixedUpdate()
+    // Update is called once per frame.
+    private void Update()
     {
         // Create a 3D movement vector using the X and Y inputs.
         Vector3 movement = new Vector3(movementX, 0.0f, movementY);
-
-        // Apply force to the Rigidbody to move the player.
-        rb.AddForce(movement * speed);
 
         // 如果有移动输入，则让角色转向移动方向
         if (movement != Vector3.zero)
@@ -96,8 +97,27 @@ public class NMove : MonoBehaviour
             // 计算目标旋转
             Quaternion targetRotation = Quaternion.LookRotation(movement.normalized);
             // 平滑旋转
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSmoothing * Time.fixedDeltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothing * Time.deltaTime);
         }
+
+        // 应用重力
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+        velocity.y -= gravity * Time.deltaTime;
+
+        // 移动角色
+        Vector3 move = movement.normalized * speed * Time.deltaTime;
+        move.y = velocity.y * Time.deltaTime;
+        controller.Move(move);
+
+        // 设置动画控制器中垂直移动参数的值
+        animator.SetFloat(verticalParam, movement.magnitude);
+        // 根据是否有移动设置动画控制器中角色状态参数的值
+        animator.SetFloat(stateParam, movement.magnitude > 0 ? 1f : 0f);
+
+        Debug.Log($"Velocity: {velocity}, Movement: {move}");
     }
 
     void OnTriggerEnter(Collider other)
@@ -126,7 +146,7 @@ public class NMove : MonoBehaviour
     void SetCountText()
     {
         // Update the count text with the current count.
-        countText.text = "Count: " + count.ToString();
+        countText.text = $"Count: {count}/7";
 
         // Check if the count has reached or exceeded the win condition.
         if (count >= 7)
